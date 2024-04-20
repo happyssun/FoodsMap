@@ -1,10 +1,9 @@
 import React from 'react';
-import AuthStackNavigator from '../AuthStackNavigation';
+import AuthStackNavigator from '../stack/AuthStackNavigation';
 import MainDrawerNavigator from '../drawer/MainDrawerNavigator';
 
 export default function RootNavigator() {
-  // 로그인이 되었을 때
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
-  return <> {isLoggedIn ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
+  return <>{isLoggedIn ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
 }
