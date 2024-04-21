@@ -1,9 +1,9 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+// import {StyleSheet} from 'react-native';
 import AuthHomeScreen from '../../screens/auth/AuthHomeScreen';
 import LoginScreen from '../../screens/auth/LoginScreen';
-import authNavigations from '../../constants';
+import {authNavigations} from '../../constants';
 import SignupScreen from '../../screens/auth/SignupScreen';
 
 // Param을 쓰는 경우 : 상세스크린과 같이 id값을 쓰는 경우에
@@ -58,6 +58,6 @@ function AuthStackNavigator() {
   );
 }
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});
 
 export default AuthStackNavigator;
