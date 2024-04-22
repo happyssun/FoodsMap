@@ -1,6 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+// import {StyleSheet} from 'react-native';
 import RootNavigator from './src/navigations/root/RootNavigator';
 
 function App() {
@@ -11,6 +11,6 @@ function App() {
   );
 }
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});
 
 export default App;
