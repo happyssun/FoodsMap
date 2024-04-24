@@ -4,9 +4,11 @@ import InputField from '../../components/InputField';
 import CustomButton from '../../components/CustomButton';
 import useForm from '../../hooks/useForm';
 import {validateLogin} from '../../utils';
+import useAuth from '../../hooks/queries/useAuth';
 
 function LoginScreen() {
   const passwordRef = useRef<TextInput | null>(null);
+  const {loginMutation} = useAuth();
   /* 기존방식
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,10 +49,11 @@ function LoginScreen() {
     validate: validateLogin,
   });
 
-  console.log(login.getTextInputProps('email'));
+  // console.log(login.getTextInputProps('email'));
 
   const handleSubmit = () => {
     console.log('values', login.values);
+    loginMutation.mutate(login.values);
   };
   return (
     <SafeAreaView style={styles.container}>
