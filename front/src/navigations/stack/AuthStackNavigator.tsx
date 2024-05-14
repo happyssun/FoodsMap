@@ -4,7 +4,7 @@ import React from 'react';
 import AuthHomeScreen from '../../screens/auth/AuthHomeScreen';
 import LoginScreen from '../../screens/auth/LoginScreen';
 import {authNavigations} from '../../constants';
-import SignupScreen from '../../screens/auth/SignupScreen';
+import SignupScreen from '../../screens/auth/SignScreen';
 
 // Param을 쓰는 경우 : 상세스크린과 같이 id값을 쓰는 경우에
 /* 여러번 사용됨으로 상수화시켜놓음 - 파일을 만듦

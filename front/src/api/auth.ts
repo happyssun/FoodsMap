@@ -31,6 +31,13 @@ const postLogin = async ({
   return data;
 };
 
+type ResponseProfile = Profile & Category;
+
+const getProfile = async (): Promise<ResponseProfile> => {
+  const {data} = await axiosInstance.get('/auth/me');
+  return data;
+};
+
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncryptStorage('refreshToken');
 
@@ -39,13 +46,6 @@ const getAccessToken = async (): Promise<ResponseToken> => {
       Authorization: `Bearer ${refreshToken}`,
     },
   });
-  return data;
-};
-
-type ResponseProfile = Profile & Category;
-
-const getProfile = async (): Promise<ResponseProfile> => {
-  const {data} = await axiosInstance.get('/auth/me');
   return data;
 };
 

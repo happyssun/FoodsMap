@@ -8,6 +8,7 @@ import {
   UseQueryCustomOptions,
 } from '../../types/common';
 import {getProfile, logout, postLogin, postSignup} from '../../api/auth';
+import {numbers, queryKeys, storageKeys} from '../../constants';
 
 // 옵션들을 다 하나씩 넣지않고 필요한것을 주입받아 사용할수 있게 옵션을 인자로 받는다
 function useSignup(mutationOptions?: UseMutationCustomOptions) {
@@ -25,12 +26,16 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
     onSuccess: ({accessToken, refreshToken}) => {
       // accessToken은 헤더에 저장
       // EncryptStorage에 refreshToken을 저장 (key, value)
-      setEncryptStorage('refreshToken', refreshToken);
-      setHeader('Authirization', `Bearer ${accessToken}`);
+      setEncryptStorage(storageKeys.REFRESH_TOKEN, refreshToken);
+      setHeader('Authirization', `Bearer ${accessToken}`); // utils에
     },
     onSettled: () => {
-      queryClient.refetchQueries({queryKey: ['auth', 'getAccessToken']});
-      queryClient.invalidateQueries({queryKey: ['auth', 'getProfile']});
+      queryClient.refetchQueries({
+        queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
+      });
     },
     ...mutationOptions,
   });
@@ -39,9 +44,9 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
 // accessToken을 한번 받아와서 보안상 저장하지 않고 짧게만 사용한다 그래서 useQuery로 stale(신선하지않은)로 취급되는 시간을 지정 - 유효시간지정
 function useGetRefreshToken() {
   const {isSuccess, data, isError} = useQuery({
-    queryKey: ['auth', 'getAccessToken'],
-    staleTime: 1000 * 60 * 30 - 1000 * 60 * 3, // 30분
-    refetchInterval: 1000 * 60 * 30 - 1000 * 60 * 3, // 갱신되게
+    queryKey: [queryKeys.AUTH, 'getAccessToken'],
+    staleTime: numbers.ACCESS_TOKEN_REFRESH_TIME,
+    refetchInterval: numbers.ACCESS_TOKEN_REFRESH_TIME, // 갱신되게
     refetchOnReconnect: true, // 앱을 종료하지 않고 다른작업하다 들어와도 자동갱신되게
     refetchIntervalInBackground: true, // 다시 연결되거나 백그라운드에서 리페치되게
   });
@@ -49,14 +54,14 @@ function useGetRefreshToken() {
   useEffect(() => {
     if (isSuccess) {
       setHeader('Authirization', `Bearer ${data.accessToken}`);
-      setEncryptStorage('refreshToken', data.refreshToken);
+      setEncryptStorage(storageKeys.REFRESH_TOKEN, data.refreshToken);
     }
   }, [isSuccess]);
 
   useEffect(() => {
     if (isError) {
       removeHeader('Authirization');
-      removeEncryptStorage('refreshToken');
+      removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     }
   }, [isError]);
 
@@ -66,7 +71,7 @@ function useGetRefreshToken() {
 // 로그인 된 후 프로필 가져오기
 function useGetProfile(queryOptions?: UseQueryCustomOptions) {
   return useQuery({
-    queryKey: ['auth', 'getProfile'],
+    queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
     queryFn: getProfile,
     ...queryOptions,
   });
@@ -76,10 +81,10 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
     mutationFn: logout,
     onSuccess: () => {
       removeHeader('Authrization');
-      removeEncryptStorage('refreshToken');
+      removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: ['auth']});
+      queryClient.invalidateQueries({queryKey: [queryKeys.AUTH]});
     },
     ...mutationOptions,
   });
