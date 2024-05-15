@@ -26,6 +26,7 @@ export default function SignupScreen() {
       },
     );
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputContainer}>

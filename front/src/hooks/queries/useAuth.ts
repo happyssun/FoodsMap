@@ -7,7 +7,13 @@ import {
   UseMutationCustomOptions,
   UseQueryCustomOptions,
 } from '../../types/common';
-import {getProfile, logout, postLogin, postSignup} from '../../api/auth';
+import {
+  getAccessToken,
+  getProfile,
+  logout,
+  postLogin,
+  postSignup,
+} from '../../api/auth';
 import {numbers, queryKeys, storageKeys} from '../../constants';
 
 // 옵션들을 다 하나씩 넣지않고 필요한것을 주입받아 사용할수 있게 옵션을 인자로 받는다
@@ -27,7 +33,7 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
       // accessToken은 헤더에 저장
       // EncryptStorage에 refreshToken을 저장 (key, value)
       setEncryptStorage(storageKeys.REFRESH_TOKEN, refreshToken);
-      setHeader('Authirization', `Bearer ${accessToken}`); // utils에
+      setHeader('Authorization', `Bearer ${accessToken}`); // utils에
     },
     onSettled: () => {
       queryClient.refetchQueries({
@@ -44,7 +50,8 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
 // accessToken을 한번 받아와서 보안상 저장하지 않고 짧게만 사용한다 그래서 useQuery로 stale(신선하지않은)로 취급되는 시간을 지정 - 유효시간지정
 function useGetRefreshToken() {
   const {isSuccess, data, isError} = useQuery({
-    queryKey: [queryKeys.AUTH, 'getAccessToken'],
+    queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
+    queryFn: getAccessToken,
     staleTime: numbers.ACCESS_TOKEN_REFRESH_TIME,
     refetchInterval: numbers.ACCESS_TOKEN_REFRESH_TIME, // 갱신되게
     refetchOnReconnect: true, // 앱을 종료하지 않고 다른작업하다 들어와도 자동갱신되게
@@ -53,14 +60,14 @@ function useGetRefreshToken() {
 
   useEffect(() => {
     if (isSuccess) {
-      setHeader('Authirization', `Bearer ${data.accessToken}`);
+      setHeader('Authorization', `Bearer ${data.accessToken}`);
       setEncryptStorage(storageKeys.REFRESH_TOKEN, data.refreshToken);
     }
   }, [isSuccess]);
 
   useEffect(() => {
     if (isError) {
-      removeHeader('Authirization');
+      removeHeader('Authorization');
       removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     }
   }, [isError]);
@@ -80,7 +87,7 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      removeHeader('Authrization');
+      removeHeader('Authorization');
       removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     },
     onSettled: () => {
